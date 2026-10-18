@@ -16,6 +16,8 @@
 
 #include "cudamap.h"
 
+#define ENABLE_SKELETON 1
+
 // forward declaration of the kernel function
 __global__ void doWarmUp();
 
@@ -166,7 +168,7 @@ __global__ void testDecoder(const cudamap::FEEAddrDecoder* decoder)
     }
 } // __global__ void testDecoder(const cudamap::FEEAddrDecoder* decoder)
 
-
+#if ENABLE_SKELETON
 int main(int argc, char* argv[]){
     const std::string funcName = "[cudamap.cu/main] ";
     std::cout << funcName << "start" << std::endl;
@@ -250,6 +252,7 @@ int main(int argc, char* argv[]){
 
     return 0;
 } // int main(int argc, char* argv)
+#endif // ENABLE_SKELETON
 
 __global__ void doWarmUp()
 {
