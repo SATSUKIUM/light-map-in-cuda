@@ -1,0 +1,11 @@
+**/.DS_Store
+./bin/
+./build/
+./image/
+
+.DS_Store
+/bin/
+/build/
+/image/
+/tree/
+/.vscode/
