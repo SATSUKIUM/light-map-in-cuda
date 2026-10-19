@@ -13,6 +13,7 @@ namespace cudamap {
         uint8_t  iSubTimeRegion{};
         int16_t  delay{};
         uint8_t  width{};
+        __host__ __device__ bool isValid() const { return width != (uint8_t)0; } // (width == 0) is reserved for invalid TriggerConfig
     }; // struct TriggerConfig
 
     struct FEEAddr
@@ -32,6 +33,7 @@ namespace cudamap {
 
         bool initialize(const std::vector<FEEAddr>& feeAddrArray, const std::vector<TriggerConfig>& triggerConfigArray);
         __host__ __device__ bool getKey(uint8_t ip1st, uint8_t ip2nd, uint8_t ip3rd, uint8_t ip4th, uint8_t ch, uint32_t& key) const;
+        __host__ bool calcKey(uint8_t ip1st, uint8_t ip2nd, uint8_t ip3rd, uint8_t ip4th, uint8_t ch, uint32_t& key) const;
         __host__ __device__ TriggerConfig getTriggerConfig(uint32_t key) const;
         uint32_t getSizeSpaceOfKey() const{ return sizeSpaceOfKey; }
         const TriggerConfig* getTriggerConfigArray() const{ return triggerConfigArray; }

@@ -106,10 +106,15 @@ namespace cudamap {
             return false;
         }
 
+        // clear
+        TriggerConfig emptyConfig{};
+        for (size_t i = 0; i < sizeSpaceOfKey; ++i) {
+            triggerConfigArray[i] = emptyConfig;
+        }
         // register
         for (size_t i = 0; i < feeAddrArray.size(); ++i) {
             uint32_t key;
-            if (!getKey(feeAddrArray[i].ip1st, feeAddrArray[i].ip2nd, feeAddrArray[i].ip3rd, feeAddrArray[i].ip4th, feeAddrArray[i].ch, key)){
+            if (!calcKey(feeAddrArray[i].ip1st, feeAddrArray[i].ip2nd, feeAddrArray[i].ip3rd, feeAddrArray[i].ip4th, feeAddrArray[i].ch, key)){
                 continue;
             }
             triggerConfigArray[key] = configArray[i];
@@ -126,10 +131,22 @@ namespace cudamap {
         if ((ip1st < minIP1st) || (ip1st > maxIP1st) || (ip2nd < minIP2nd) || (ip2nd > maxIP2nd) || (ip3rd < minIP3rd) || (ip3rd > maxIP3rd) || (ip4th < minIP4th) || (ip4th > maxIP4th) || (ch < minCh) || (ch > maxCh)) {
             return false;
         }
-
-        key = (static_cast<uint32_t>(ip1st) - minIP1st) * strideIP1st + (static_cast<uint32_t>(ip2nd) - minIP2nd) * strideIP2nd + (static_cast<uint32_t>(ip3rd) - minIP3rd) * strideIP3rd + (static_cast<uint32_t>(ip4th) - minIP4th) * strideIP4th + (static_cast<uint32_t>(ch) - minCh) * strideCh;
-        return true;
+        else{
+            key = (static_cast<uint32_t>(ip1st) - minIP1st) * strideIP1st + (static_cast<uint32_t>(ip2nd) - minIP2nd) * strideIP2nd + (static_cast<uint32_t>(ip3rd) - minIP3rd) * strideIP3rd + (static_cast<uint32_t>(ip4th) - minIP4th) * strideIP4th + (static_cast<uint32_t>(ch) - minCh) * strideCh;
+            return triggerConfigArray[key].isValid();
+        }
     } // __host__ __device__ bool FEEAddrDecoder::getKey(uint8_t ip1st, uint8_t ip2nd, uint8_t ip3rd, uint8_t ip4th, uint8_t ch, uint32_t& key) const
+
+    __host__ bool FEEAddrDecoder::calcKey(uint8_t ip1st, uint8_t ip2nd, uint8_t ip3rd, uint8_t ip4th, uint8_t ch, uint32_t& key) const
+    {
+        if ((ip1st < minIP1st) || (ip1st > maxIP1st) || (ip2nd < minIP2nd) || (ip2nd > maxIP2nd) || (ip3rd < minIP3rd) || (ip3rd > maxIP3rd) || (ip4th < minIP4th) || (ip4th > maxIP4th) || (ch < minCh) || (ch > maxCh)) {
+            return false;
+        }
+        else{
+            key = (static_cast<uint32_t>(ip1st) - minIP1st) * strideIP1st + (static_cast<uint32_t>(ip2nd) - minIP2nd) * strideIP2nd + (static_cast<uint32_t>(ip3rd) - minIP3rd) * strideIP3rd + (static_cast<uint32_t>(ip4th) - minIP4th) * strideIP4th + (static_cast<uint32_t>(ch) - minCh) * strideCh;
+            return true;
+        }
+    } // __host__ bool FEEAddrDecoder::calcKey(uint8_t ip1st, uint8_t ip2nd, uint8_t ip3rd, uint8_t ip4th, uint8_t ch, uint32_t& key) const
 
 
     __host__ __device__ TriggerConfig FEEAddrDecoder::getTriggerConfig(uint32_t key) const
@@ -143,6 +160,7 @@ namespace cudamap {
 
 } // namespace cudamap
 
+#if ENABLE_SKELETON
 __global__ void testDecoder(const cudamap::FEEAddrDecoder* decoder)
 {
     printf("testDecoder called\n");
@@ -168,7 +186,6 @@ __global__ void testDecoder(const cudamap::FEEAddrDecoder* decoder)
     }
 } // __global__ void testDecoder(const cudamap::FEEAddrDecoder* decoder)
 
-#if ENABLE_SKELETON
 int main(int argc, char* argv[]){
     const std::string funcName = "[cudamap.cu/main] ";
     std::cout << funcName << "start" << std::endl;
