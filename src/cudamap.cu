@@ -245,14 +245,18 @@ int main(int argc, char* argv[]){
 
     decoder.initialize(feeAddrs, triggerConfigs);
 
+    // allocate device memory
     int nCongis = decoder.getSizeSpaceOfKey();
     cudamap::TriggerConfig* devTriggerConfigs;
     cudaMalloc(&devTriggerConfigs, nCongis * sizeof(cudamap::TriggerConfig));
+    // copy TriggerConfig array to device
     cudaMemcpy(devTriggerConfigs, decoder.getTriggerConfigArray(), nCongis * sizeof(cudamap::TriggerConfig), cudaMemcpyHostToDevice);
 
+    // create a device copy of the decoder
     cudamap::FEEAddrDecoder devDecoder = decoder;
     devDecoder.setTriggerConfigArray(devTriggerConfigs);
 
+    // allocate device memory for the decoder
     cudamap::FEEAddrDecoder* devDecoderPtr;
     cudaMalloc(&devDecoderPtr, sizeof(cudamap::FEEAddrDecoder));
     cudaMemcpy(devDecoderPtr, &devDecoder, sizeof(cudamap::FEEAddrDecoder), cudaMemcpyHostToDevice);
