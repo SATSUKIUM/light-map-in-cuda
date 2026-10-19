@@ -3,6 +3,8 @@ CUDAカーネル関数でアクセスできる整数ペア→somethingのマッ�
 ## build
 実行する環境のGPUのCompute Capacityに合わせてオプション引数を指定する。(例: ver8.6のGPU)
 ```
-cmake -S . -B build -DCMAKE_CUDA_ARCHITECTURES=86
-cmake --build build
+cmake -S . -B ./build -DCMAKE_CUDA_ARCHITECTURES=86 -DCMAKE_INSTALL_PREFIX=$NESTDAQ
+cmake --build ./build --parallel=4
+cmake --install ./build
 ```
+上記コマンドで、プロジェクトルート/binにスケルトンがインストールされ、$NESTDAQにライブラリがインストールされます。
