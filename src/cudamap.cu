@@ -132,6 +132,15 @@ namespace cudamap {
         }
     } // __host__ __device__ bool FEEAddrDecoder::getKey(uint8_t ip1st, uint8_t ip2nd, uint8_t ip3rd, uint8_t ip4th, uint8_t ch, uint32_t& key) const
 
+    __host__ __device__ bool FEEAddrDecoder::getKey(uint32_t ip, uint8_t ch, uint32_t& key) const
+    {
+        uint8_t ip1st = static_cast<uint8_t>((ip >> 24) & 0xff);
+        uint8_t ip2nd = static_cast<uint8_t>((ip >> 16) & 0xff);
+        uint8_t ip3rd = static_cast<uint8_t>((ip >> 8) & 0xff);
+        uint8_t ip4th = static_cast<uint8_t>(ip & 0xff);
+        return getKey(ip1st, ip2nd, ip3rd, ip4th, ch, key);
+    } // __host__ __device__ bool FEEAddrDecoder::getKey(uint32_t ip, uint8_t ch, uint32_t& key) const
+
     __host__ bool FEEAddrDecoder::calcKey(uint8_t ip1st, uint8_t ip2nd, uint8_t ip3rd, uint8_t ip4th, uint8_t ch, uint32_t& key) const
     {
         if ((ip1st < minIP1st) || (ip1st > maxIP1st) || (ip2nd < minIP2nd) || (ip2nd > maxIP2nd) || (ip3rd < minIP3rd) || (ip3rd > maxIP3rd) || (ip4th < minIP4th) || (ip4th > maxIP4th) || (ch < minCh) || (ch > maxCh)) {

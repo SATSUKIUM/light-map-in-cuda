@@ -7,6 +7,8 @@
 
 namespace cudamap {
 
+    constexpr uint8_t NO_SUBGROUP = UINT8_MAX; // 255, reserved for "no sub-group"
+
     struct TriggerConfig
     {
         uint32_t hitBit{};
@@ -14,6 +16,10 @@ namespace cudamap {
         int16_t  delay{};
         uint8_t  width{};
         __host__ __device__ bool isValid() const { return width != (uint8_t)0; } // (width == 0) is reserved for invalid TriggerConfig
+        __host__ __device__ void print() const
+        {
+            printf("TriggerConfig: hitBit=%u, iSubTimeRegion=%u, delay=%d, width=%u\n", hitBit, iSubTimeRegion, delay, width);
+        }
     }; // struct TriggerConfig
 
     struct FEEAddr
@@ -33,6 +39,7 @@ namespace cudamap {
 
         bool initialize(const std::vector<FEEAddr>& feeAddrArray, const std::vector<TriggerConfig>& triggerConfigArray);
         __host__ __device__ bool getKey(uint8_t ip1st, uint8_t ip2nd, uint8_t ip3rd, uint8_t ip4th, uint8_t ch, uint32_t& key) const;
+        __host__ __device__ bool getKey(uint32_t ip, uint8_t ch, uint32_t& key) const;
         __host__ bool calcKey(uint8_t ip1st, uint8_t ip2nd, uint8_t ip3rd, uint8_t ip4th, uint8_t ch, uint32_t& key) const;
         __host__ __device__ TriggerConfig getTriggerConfig(uint32_t key) const;
         uint32_t getSizeSpaceOfKey() const{ return sizeSpaceOfKey; }

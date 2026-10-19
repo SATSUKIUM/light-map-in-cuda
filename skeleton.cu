@@ -80,12 +80,11 @@ int main(int argc, char* argv[]){
         triggerConfigs.push_back({group, subgroup, offset, width});
     };
 
-    constexpr uint8_t NO_SUBGROUP = UINT8_MAX;
     uint8_t width = 20;
 
     // Group 0, 1
-    add(0xc0a802a9,  static_cast<uint8_t>(8), static_cast<uint8_t>(0), static_cast<uint8_t>(NO_SUBGROUP), static_cast<short>(0), width);
-    add(0xc0a802a9, static_cast<uint8_t>(10), static_cast<uint8_t>(1), static_cast<uint8_t>(NO_SUBGROUP), static_cast<short>(0), width);
+    add(0xc0a802a9,  static_cast<uint8_t>(8), static_cast<uint8_t>(0), static_cast<uint8_t>(cudamap::NO_SUBGROUP), static_cast<short>(0), width);
+    add(0xc0a802a9, static_cast<uint8_t>(10), static_cast<uint8_t>(1), static_cast<uint8_t>(cudamap::NO_SUBGROUP), static_cast<short>(0), width);
     // Group 2, Subgroup 0
     add(0xc0a802aa, static_cast<uint8_t>(16), static_cast<uint8_t>(2), static_cast<uint8_t>(0), static_cast<short>(-12), width);
     add(0xc0a802aa, static_cast<uint8_t>(17), static_cast<uint8_t>(2), static_cast<uint8_t>(0), static_cast<short>(-12), width);
