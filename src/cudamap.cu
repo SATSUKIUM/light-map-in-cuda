@@ -151,10 +151,6 @@ namespace cudamap {
 
     __host__ __device__ TriggerConfig FEEAddrDecoder::getTriggerConfig(uint32_t key) const
     {
-        if (key >= sizeSpaceOfKey) {
-            return TriggerConfig{};
-        }
-
         return triggerConfigArray[key];
     } // __host__ __device__ TriggerConfig FEEAddrDecoder::getTriggerConfig(uint32_t key) const
 
@@ -206,34 +202,46 @@ int main(int argc, char* argv[]){
     // Add some test data
     auto add = [&](uint32_t ip, uint8_t ch,
                 uint8_t group, uint8_t subgroup,
-                int16_t offset) {
+                int16_t offset, uint8_t width) {
+        std::cout << funcName << "Adding FEEAddr: "
+                << static_cast<int>((ip >> 24) & 0xff) << "."
+                << static_cast<int>((ip >> 16) & 0xff) << "."
+                << static_cast<int>((ip >> 8) & 0xff) << "."
+                << static_cast<int>(ip & 0xff) << ", ch: "
+                << static_cast<int>(ch)
+                << " with TriggerConfig: group=" << static_cast<int>(group)
+                << ", subgroup=" << static_cast<int>(subgroup)
+                << ", offset=" << offset
+                << ", width=" << static_cast<int>(width)
+                << std::endl;
         feeAddrs.push_back({static_cast<uint8_t>((ip >> 24) & 0xff), static_cast<uint8_t>((ip >> 16) & 0xff), static_cast<uint8_t>((ip >> 8) & 0xff), static_cast<uint8_t>(ip & 0xff), ch});
-        triggerConfigs.push_back({group, subgroup, offset, 20});
+        triggerConfigs.push_back({group, subgroup, offset, width});
     };
 
     constexpr uint8_t NO_SUBGROUP = UINT8_MAX;
+    uint8_t width = 20;
 
     // Group 0, 1
-    add(0xc0a802a9,  static_cast<uint8_t>(8), static_cast<uint8_t>(0), static_cast<uint8_t>(NO_SUBGROUP), static_cast<short>(0));
-    add(0xc0a802a9, static_cast<uint8_t>(10), static_cast<uint8_t>(1), static_cast<uint8_t>(NO_SUBGROUP), static_cast<short>(0));
+    add(0xc0a802a9,  static_cast<uint8_t>(8), static_cast<uint8_t>(0), static_cast<uint8_t>(NO_SUBGROUP), static_cast<short>(0), width);
+    add(0xc0a802a9, static_cast<uint8_t>(10), static_cast<uint8_t>(1), static_cast<uint8_t>(NO_SUBGROUP), static_cast<short>(0), width);
     // Group 2, Subgroup 0
-    add(0xc0a802aa, static_cast<uint8_t>(16), static_cast<uint8_t>(2), static_cast<uint8_t>(0), static_cast<short>(-12));
-    add(0xc0a802aa, static_cast<uint8_t>(17), static_cast<uint8_t>(2), static_cast<uint8_t>(0), static_cast<short>(-12));
+    add(0xc0a802aa, static_cast<uint8_t>(16), static_cast<uint8_t>(2), static_cast<uint8_t>(0), static_cast<short>(-12), width);
+    add(0xc0a802aa, static_cast<uint8_t>(17), static_cast<uint8_t>(2), static_cast<uint8_t>(0), static_cast<short>(-12), width);
     // Group 2, Subgroup 1
-    add(0xc0a802aa, static_cast<uint8_t>(18), static_cast<uint8_t>(2), static_cast<uint8_t>(1), static_cast<short>(-12));
-    add(0xc0a802aa, static_cast<uint8_t>(19), static_cast<uint8_t>(2), static_cast<uint8_t>(1), static_cast<short>(-12));
+    add(0xc0a802aa, static_cast<uint8_t>(18), static_cast<uint8_t>(2), static_cast<uint8_t>(1), static_cast<short>(-12), width);
+    add(0xc0a802aa, static_cast<uint8_t>(19), static_cast<uint8_t>(2), static_cast<uint8_t>(1), static_cast<short>(-12), width);
     // Group 2, Subgroup 2
-    add(0xc0a802aa, static_cast<uint8_t>(20), static_cast<uint8_t>(2), static_cast<uint8_t>(2), static_cast<short>(-12));
-    add(0xc0a802aa, static_cast<uint8_t>(21), static_cast<uint8_t>(2), static_cast<uint8_t>(2), static_cast<short>(-12));
+    add(0xc0a802aa, static_cast<uint8_t>(20), static_cast<uint8_t>(2), static_cast<uint8_t>(2), static_cast<short>(-12), width);
+    add(0xc0a802aa, static_cast<uint8_t>(21), static_cast<uint8_t>(2), static_cast<uint8_t>(2), static_cast<short>(-12), width);
     // Group 2, Subgroup 3
-    add(0xc0a802aa, static_cast<uint8_t>(22), static_cast<uint8_t>(2), static_cast<uint8_t>(3), static_cast<short>(-12));
-    add(0xc0a802aa, static_cast<uint8_t>(23), static_cast<uint8_t>(2), static_cast<uint8_t>(3), static_cast<short>(-12));
+    add(0xc0a802aa, static_cast<uint8_t>(22), static_cast<uint8_t>(2), static_cast<uint8_t>(3), static_cast<short>(-12), width);
+    add(0xc0a802aa, static_cast<uint8_t>(23), static_cast<uint8_t>(2), static_cast<uint8_t>(3), static_cast<short>(-12), width);
     // Group 2, Subgroup 4
-    add(0xc0a802aa, static_cast<uint8_t>(24), static_cast<uint8_t>(2), static_cast<uint8_t>(4), static_cast<short>(-12));
-    add(0xc0a802aa, static_cast<uint8_t>(25), static_cast<uint8_t>(2), static_cast<uint8_t>(4), static_cast<short>(-12));
+    add(0xc0a802aa, static_cast<uint8_t>(24), static_cast<uint8_t>(2), static_cast<uint8_t>(4), static_cast<short>(-12), width);
+    add(0xc0a802aa, static_cast<uint8_t>(25), static_cast<uint8_t>(2), static_cast<uint8_t>(4), static_cast<short>(-12), width);
     // Group 2, Subgroup 5
-    add(0xc0a802aa, static_cast<uint8_t>(27), static_cast<uint8_t>(2), static_cast<uint8_t>(5), static_cast<short>(-12));
-    add(0xc0a802aa, static_cast<uint8_t>(28), static_cast<uint8_t>(2), static_cast<uint8_t>(5), static_cast<short>(-12));
+    add(0xc0a802aa, static_cast<uint8_t>(27), static_cast<uint8_t>(2), static_cast<uint8_t>(5), static_cast<short>(-12), width);
+    add(0xc0a802aa, static_cast<uint8_t>(28), static_cast<uint8_t>(2), static_cast<uint8_t>(5), static_cast<short>(-12), width);
 
     decoder.initialize(feeAddrs, triggerConfigs);
 
