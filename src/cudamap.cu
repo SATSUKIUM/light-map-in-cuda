@@ -158,4 +158,23 @@ namespace cudamap {
         return triggerConfigArray[key];
     } // __host__ __device__ TriggerConfig FEEAddrDecoder::getTriggerConfig(uint32_t key) const
 
+    void stageItem(uint32_t ip, uint8_t ch, uint32_t hitBit, uint8_t width, int16_t offset, uint8_t iSubTimeRegion, std::vector<FEEAddr>& feeAddrArray, std::vector<TriggerConfig>& triggerConfigArray)
+    {
+        uint8_t ip1st = static_cast<uint8_t>((ip >> 24) & 0xff);
+        uint8_t ip2nd = static_cast<uint8_t>((ip >> 16) & 0xff);
+        uint8_t ip3rd = static_cast<uint8_t>((ip >> 8) & 0xff);
+        uint8_t ip4th = static_cast<uint8_t>(ip & 0xff);
+        feeAddrArray.push_back({ip1st, ip2nd, ip3rd, ip4th, ch});
+        triggerConfigArray.push_back({hitBit, iSubTimeRegion, offset, width});
+    } // void stageItem(uint32_t ip, uint8_t ch, uint32_t hitBit, uint8_t width, int16_t offset, uint8_t iSubTimeRegion, std::vector<FEEAddr>& feeAddrArray, std::vector<TriggerConfig>& triggerConfigArray)
+
+    __host__ __device__ void TriggerConfig::print() const
+    {
+        printf("TriggerConfig: hitBit=");
+        for (int i = 31; i >= 0; --i) {
+            printf("%u", (hitBit >> i) & 1u);
+        }
+        printf(", iSubTimeRegion=%u, delay=%d, width=%u\n", iSubTimeRegion, delay, width);
+    } // __host__ __device__ void TriggerConfig::print() const
+
 } // namespace cudamap

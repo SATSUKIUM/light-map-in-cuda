@@ -16,10 +16,7 @@ namespace cudamap {
         int16_t  delay{};
         uint8_t  width{};
         __host__ __device__ bool isValid() const { return width != (uint8_t)0; } // (width == 0) is reserved for invalid TriggerConfig
-        __host__ __device__ void print() const
-        {
-            printf("TriggerConfig: hitBit=%u, iSubTimeRegion=%u, delay=%d, width=%u\n", hitBit, iSubTimeRegion, delay, width);
-        }
+        __host__ __device__ void print() const;
     }; // struct TriggerConfig
 
     struct FEEAddr
@@ -73,6 +70,8 @@ namespace cudamap {
 
         TriggerConfig* triggerConfigArray{nullptr};
     }; // class FEEAddrDecoder
+
+    void stageItem(uint32_t ip, uint8_t ch, uint32_t hitBit, uint8_t width, int16_t offset, uint8_t iSubTimeRegion, std::vector<FEEAddr>& feeAddrArray, std::vector<TriggerConfig>& triggerConfigArray);
 
 } // namespace cudamap
 
